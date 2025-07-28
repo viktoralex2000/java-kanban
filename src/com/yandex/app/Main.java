@@ -4,81 +4,75 @@ import com.yandex.app.model.*;
 import com.yandex.app.service.*;
 
 class Main {
+    static final int maxHistorySize = 10;
+    static InMemoryHistoryManager inMemoryHistoryManager;
+    static InMemoryTaskManager inMemoryManager;
+
     public static void main(String[] args) {
-        TaskManager manager = new TaskManager();
-        //   1. Создание материала для теста
-        // Две задачи
-        Task task1 = new Task("Купить продуктов", "Сходить в ближайший магазин за продуктами");
-        Task task2 = new Task("Сделать уборку", "Провести полную уборку во всём доме с мытьём полов");
-        manager.createTask(task1);
-        manager.createTask(task2);
+        inMemoryHistoryManager = Managers.getDefaultHistory(maxHistorySize);
+        inMemoryManager = Managers.getDefault(inMemoryHistoryManager);
 
-        // Эпик 1 с 2 подзадачами
-        EpicTask epic1 = new EpicTask("Решить Фз4", "Сесть за компьютер и " +
-                "решить Финальное задание 4 спринта");
-        manager.createEpicTask(epic1);
-        SubTask sub1 = new SubTask("Включить мозг", "Активировать внимательность и рассудительность", epic1.getId());
-        SubTask sub2 = new SubTask("Написать код", "Изучив тз написать то что требуется в тз так," +
-                " как ты это понял", epic1.getId());
-        manager.createSubTask(sub1);
-        manager.createSubTask(sub2);
+        // 1. Создание задач
+        Task task1 = new Task("Задача 1", "Описание 1");
+        Task task2 = new Task("Задача 2", "Описание 2");
+        inMemoryManager.createTask(task1);
+        inMemoryManager.createTask(task2);
 
-        // Эпик 2 с 1 подзадачей
-        EpicTask epic2 = new EpicTask("Дождаться ревью", "Просто подождать");
-        manager.createEpicTask(epic2);
-        SubTask sub3 = new SubTask("Надеяться на лучшее", "Надеяться на получение" +
-                " максимально развернутого ответа", epic2.getId());
-        manager.createSubTask(sub3);
+        EpicTask epic1 = new EpicTask("Эпик 1", "Описание эпика 1");
+        inMemoryManager.createEpicTask(epic1);
+        SubTask sub1 = new SubTask("Подзадача 1", "Подробности 1", epic1.getId());
+        SubTask sub2 = new SubTask("Подзадача 2", "Подробности 2", epic1.getId());
+        inMemoryManager.createSubTask(sub1);
+        inMemoryManager.createSubTask(sub2);
 
-        //   2. Печать
-        printAll(manager);
+        EpicTask epic2 = new EpicTask("Эпик 2", "Описание эпика 2");
+        inMemoryManager.createEpicTask(epic2);
+        SubTask sub3 = new SubTask("Подзадача 3", "Подробности 3", epic2.getId());
+        inMemoryManager.createSubTask(sub3);
 
-        //   3. Изменение статусов и печать результатов
-        // Одна задача
-        Task newTask1 = new Task("Купить продуктов", "Сходить в ближайший магазин за продуктами");
-        newTask1.setStatus(TaskStatus.DONE);
-        newTask1.setId(task1.getId());
-        manager.updateTask(newTask1);
+        // 2. Просмотры и история
+        System.out.println("== Просмотр задач и история после каждого вызова ==");
 
-        // Две подзадачи 1 эпика
-        SubTask newSub1 = new SubTask("Включить мозг", "Активировать внимательность и рассудительность",
-                epic1.getId());
-        SubTask newSub2 = new SubTask("Написать код", "Изучив тз написать то что требуется в тз так," +
-                " как ты это понял", epic1.getId());
-        newSub1.setStatus(TaskStatus.DONE);
-        newSub2.setStatus(TaskStatus.DONE);
-        newSub1.setId(sub1.getId());
-        newSub2.setId(sub2.getId());
-        manager.updateSubTask(newSub1);
-        manager.updateSubTask(newSub2);
+        inMemoryManager.getTaskById(task1.getId());
+        printHistory(inMemoryManager);
+        inMemoryManager.getEpicTaskById(epic1.getId());
+        printHistory(inMemoryManager);
+        inMemoryManager.getSubTaskById(sub1.getId());
+        printHistory(inMemoryManager);
+        inMemoryManager.getTaskById(task2.getId());
+        printHistory(inMemoryManager);
+        inMemoryManager.getSubTaskById(sub2.getId());
+        printHistory(inMemoryManager);
+        inMemoryManager.getEpicTaskById(epic2.getId());
+        printHistory(inMemoryManager);
+        inMemoryManager.getSubTaskById(sub3.getId());
+        printHistory(inMemoryManager);
 
-        // Подзадача 2 эпика
-        SubTask newSub3 = new SubTask("Надеяться на лучшее", "Надеяться на получение" +
-                " максимально развернутого ответа", epic2.getId());
-        newSub3.setStatus(TaskStatus.IN_PROGRESS);
-        newSub3.setId(sub3.getId());
-        manager.updateSubTask(newSub3);
-
-        printAll(manager);
-
-        //   5. Удаление одной задачи и одного эпика
-        manager.deleteTaskById(task2.getId());
-        manager.deleteEpicTaskById(epic1.getId());
-
-        printAll(manager);
+        // Проверка переполнения истории
+        inMemoryManager.getTaskById(task1.getId());
+        inMemoryManager.getSubTaskById(sub1.getId());
+        inMemoryManager.getEpicTaskById(epic1.getId());
+        inMemoryManager.getTaskById(task2.getId());
+        printHistory(inMemoryManager);  // Здесь должно быть максимум 10 элементов
     }
 
-    private static void printAll(TaskManager manager) {
+    private static void printHistory(InMemoryTaskManager manager) {
+        for (Task task : inMemoryHistoryManager.getHistory()) {
+            System.out.println(task);
+        }
+    }
+
+    private static void printTasks(InMemoryTaskManager manager) {
+
         for (Task task : manager.getAllTasks()) {
             System.out.println(task);
         }
         for (EpicTask epic : manager.getAllEpicTasks()) {
             System.out.println(epic);
-            for (int id : epic.getSubtaskIdList()) {
-                System.out.println(manager.getSubTaskById(id));
+            for (SubTask subTask : manager.getSubtasksOfEpic(epic.getId())) {
+                System.out.println(subTask);
             }
         }
         System.out.println();
     }
-
 }

@@ -4,7 +4,7 @@ import com.yandex.app.model.Task;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 class TaskTest {
-    // Проверка на равенство по айди у задачи
+    // Проверка на равенство по айди у задачи (1)
     @Test
     void shouldReturnTrueWhenIdsEqual() {
         Task task1 = new Task("name1", "desc1");

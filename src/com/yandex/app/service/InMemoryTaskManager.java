@@ -11,14 +11,17 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, SubTask> subtasks = new HashMap<>();
     private HistoryManager historyManager;
 
-    InMemoryTaskManager(HistoryManager historyManager) {
-        this.historyManager = historyManager;
+    InMemoryTaskManager(int maxHistorySize) {
+        this.historyManager = Managers.getDefaultHistory(maxHistorySize);
     }
 
-    int newId() {
+    private int newId() {
         return idCount++;
     }
-
+    @Override
+    public ArrayDeque<Task> getHistory() { //Замечание: добавлен делегирующий метод вызова истории
+        return historyManager.getHistory();
+    }
     // Методы задач
 
     @Override
@@ -32,9 +35,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getTaskById(int id) {
-        historyManager.updateHistory(tasks.get(id));
-        return tasks.get(id);
+    public Task getTaskById(int id) {//Замечание: исправлена ошибка добавления в историю null (двух других тоже)
+        Task taskById = tasks.get(id);//Замечание: локальная переменная вместо дублирования запроса к Map
+        if (taskById != null) historyManager.updateHistory(taskById);
+        return taskById;
     }
 
     @Override
@@ -69,8 +73,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getEpicTaskById(int id) {
-        historyManager.updateHistory(epics.get(id));
-        return epics.get(id);
+        EpicTask epicTaskById = epics.get(id);
+        if (epicTaskById != null) historyManager.updateHistory(epicTaskById);
+        return epicTaskById;
     }
 
     @Override
@@ -116,8 +121,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public SubTask getSubTaskById(int id) {
-        historyManager.updateHistory(subtasks.get(id));
-        return subtasks.get(id);
+        SubTask subTaskById = subtasks.get(id);
+        if (subTaskById != null) historyManager.updateHistory(subTaskById);
+        return subTaskById;
     }
 
     @Override

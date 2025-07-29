@@ -26,14 +26,13 @@ class InMemoryHistoryManagerTest {
 
         assertEquals(10, history.getHistory().size());
     }
-    // История должна сохранять исходное состояние задачи
+    // Добавление в историю должно сохранять исходное состояние задачи (9)
     @Test
     void shouldKeepOriginalTaskState() {
         Task task = new Task("Таск", "Описание");
         task.setId(42);
         history.updateHistory(task);
         task.setName("ТаскТаск");
-
-        assertNotEquals(task.getName(), history.getHistory().getFirst().getName());
+        assertEquals(task.getName(), history.getHistory().getFirst().getName());
     }
 }

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SubTaskTest {
-    // Проверка проверка на равенство по айди у подзадачи
+    // Проверка проверка на равенство по айди у подзадачи (2)
     @Test
     void shouldReturnTrueWhenIdsAreEqual() {
         SubTask sub1 = new SubTask("a", "b", 2);

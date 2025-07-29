@@ -5,12 +5,11 @@ import com.yandex.app.service.*;
 
 class Main {
     static final int maxHistorySize = 10;
-    static InMemoryHistoryManager inMemoryHistoryManager;
     static InMemoryTaskManager inMemoryManager;
 
     public static void main(String[] args) {
-        inMemoryHistoryManager = Managers.getDefaultHistory(maxHistorySize);
-        inMemoryManager = Managers.getDefault(inMemoryHistoryManager);
+        //inMemoryHistoryManager = Managers.getDefaultHistory(maxHistorySize);
+        inMemoryManager = Managers.getDefault(maxHistorySize);
 
         // 1. Создание задач
         Task task1 = new Task("Задача 1", "Описание 1");
@@ -57,7 +56,7 @@ class Main {
     }
 
     private static void printHistory(InMemoryTaskManager manager) {
-        for (Task task : inMemoryHistoryManager.getHistory()) {
+        for (Task task : inMemoryManager.getHistory()) {
             System.out.println(task);
         }
     }

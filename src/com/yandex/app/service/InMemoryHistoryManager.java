@@ -5,21 +5,21 @@ import com.yandex.app.model.Task;
 import java.util.ArrayDeque;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    int maxHistorySize;
+    private int maxHistorySize;//Замечание: модификатор доступа private
+    private ArrayDeque<Task> historyDeque;//Замечание: все переменные в начале
 
     public InMemoryHistoryManager(int maxHistorySize) {
         this.maxHistorySize = maxHistorySize;
+        historyDeque = new ArrayDeque<>(maxHistorySize);
     }
-
-    private ArrayDeque<Task> historyDeque = new ArrayDeque<>();
 
     @Override
     public ArrayDeque<Task> getHistory() {
-        return historyDeque;
+        return new ArrayDeque<>(historyDeque);//Замечание: возврат копии
     }
 
     public void updateHistory(Task task) {
-        if (historyDeque.size() < 10) {
+        if (historyDeque.size() < maxHistorySize) {//Замечание: использование maxHistorySize
             historyDeque.addFirst(task);
         } else {
             historyDeque.removeLast();

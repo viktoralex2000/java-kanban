@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTaskTest {
-    // Проверка равенста по id у наследника Task
+    // Проверка равенста по id у наследника Task (2)
     @Test
     void shouldReturnTrueWhenIdsEqual() {
         EpicTask epic1 = new EpicTask("Эпик1", "Описание1");

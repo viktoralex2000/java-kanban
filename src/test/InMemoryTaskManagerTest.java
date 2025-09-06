@@ -5,6 +5,8 @@ import com.yandex.app.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
@@ -12,17 +14,19 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     void init() {
-        manager = Managers.getDefault(10);
-    }
-    //Эпик нельзя сделать своей подзадачей (3)
-    @Test
-    void shouldNotAllowEpicToContainItselfAsSubtask() {
-        EpicTask epic = new EpicTask("Эпик", "Описание");
-        epic.setId(3);
-        epic.addSubTask(3);
-        assertFalse(epic.getSubtaskIdList().contains(3));
+        manager = Managers.getDefault();
     }
 
+    // SubTask не может быть своим эпиком
+    @Test
+    void shouldNotBeEpicTaskForSelf() {
+        EpicTask epic = new EpicTask("Эпик", "Описание");
+        manager.createEpicTask(epic);
+        SubTask subtask = new SubTask("Субтаск", "Описание", epic.getId());
+        subtask.setId(epic.getId());
+        epic.addSubTask(subtask.getId());
+        assertFalse(epic.getSubtaskIdList().contains(epic.getId()));
+    }
 
     //Субтаск не может быть своим эпиком (4)
     @Test
@@ -123,4 +127,64 @@ class InMemoryTaskManagerTest {
         assertEquals(1, manager.getHistory().size());
     }
 
+    //Должен добавлять таски, эпики и субтаски в историю при их просмотре с соблюдением порядка
+    @Test
+    void shouldAddTaskEpicSubInMemoryWithCorrectOrders() {
+        Task task = new Task("Таск", "Описание");
+        manager.createTask(task);
+        EpicTask epic = new EpicTask("ЭпикТаск", "Описание");
+        manager.createEpicTask(epic);
+        SubTask sub = new SubTask("Субтаск", "Описание", epic.getId());
+        manager.createSubTask(sub);
+        manager.getTaskById(task.getId());
+        manager.getEpicTaskById(epic.getId());
+        manager.getSubTaskById(sub.getId());
+        ArrayList<Task> testListHistory = manager.getHistory();
+        assertEquals(testListHistory.size(), 3);
+        assertEquals(task, testListHistory.get(2));
+        assertEquals(epic, testListHistory.get(1));
+        assertEquals(sub, testListHistory.get(0));
+    }
+
+    //Должен удалять таск, субтаск и эпиктаск из истории когда те удаляются из памяти
+    @Test
+    void shouldDeleteTaskEpicSubFromHistoryWithDeleteFromMemory() {
+        Task task = new Task("Таск", "Описание");
+        manager.createTask(task);
+        EpicTask epic = new EpicTask("ЭпикТаск", "Описание");
+        manager.createEpicTask(epic);
+        SubTask sub1 = new SubTask("Субтаск1", "Описание", epic.getId());
+        manager.createSubTask(sub1);
+        SubTask sub2 = new SubTask("Субтаск2", "Описание", epic.getId());
+        manager.createSubTask(sub2);
+        manager.getTaskById(task.getId());
+        manager.getEpicTaskById(epic.getId());
+        manager.getSubTaskById(sub1.getId());
+        manager.getSubTaskById(sub2.getId());
+
+        manager.deleteTaskById(task.getId());//Удалится ли история о таске
+        assertFalse(manager.getHistory().contains(task));
+        manager.deleteSubTaskById(sub1.getId());//Удалится ли история о субтаске
+        assertFalse(manager.getHistory().contains(sub1));
+        manager.deleteEpicTaskById(epic.getId());//Удалится ли история о эпике и о его субтаске
+        assertFalse(manager.getHistory().contains(epic));
+        assertFalse(manager.getHistory().contains(sub2));
+        //Дополнительная проверка методов на удаление всех тасков
+        manager.createTask(task);
+        manager.createEpicTask(epic);
+        manager.createSubTask(sub2);
+        manager.getTaskById(task.getId());
+        manager.getEpicTaskById(epic.getId());
+        manager.getSubTaskById(sub2.getId());
+        manager.deleteAllTasks();
+        assertFalse(manager.getHistory().contains(task));
+        manager.deleteAllEpicTasks();
+        assertFalse(manager.getHistory().contains(epic));
+        assertFalse(manager.getHistory().contains(sub2));
+
+        manager.createSubTask(sub1);
+        manager.getSubTaskById(sub1.getId());
+        manager.deleteAllSubTasks();
+        assertFalse(manager.getHistory().contains(sub1));
+    }
 }

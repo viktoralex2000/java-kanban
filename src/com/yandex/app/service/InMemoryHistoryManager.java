@@ -2,28 +2,28 @@ package com.yandex.app.service;
 
 import com.yandex.app.model.Task;
 
-import java.util.ArrayDeque;
+import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private int maxHistorySize;//Замечание: модификатор доступа private
-    private ArrayDeque<Task> historyDeque;//Замечание: все переменные в начале
-
-    public InMemoryHistoryManager(int maxHistorySize) {
-        this.maxHistorySize = maxHistorySize;
-        historyDeque = new ArrayDeque<>(maxHistorySize);
+    private LinkedHashMap<Integer,Task> historyLinkedMap;
+    public InMemoryHistoryManager() {
+        historyLinkedMap = new LinkedHashMap<>(16, 0.75f, true);
     }
 
     @Override
-    public ArrayDeque<Task> getHistory() {
-        return new ArrayDeque<>(historyDeque);//Замечание: возврат копии
+    public ArrayList<Task> getHistory() {
+        ArrayList<Task> historyList = new ArrayList<>(historyLinkedMap.values());
+        Collections.reverse(historyList);
+        return historyList;
     }
 
-    public void updateHistory(Task task) {
-        if (historyDeque.size() < maxHistorySize) {//Замечание: использование maxHistorySize
-            historyDeque.addFirst(task);
-        } else {
-            historyDeque.removeLast();
-            historyDeque.addFirst(task);
-        }
+    @Override
+    public void add(int id, Task task) {
+        historyLinkedMap.put(id, task);
+    }
+
+    @Override
+    public void remove(int id) {
+        historyLinkedMap.remove(id);
     }
 }

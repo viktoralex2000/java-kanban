@@ -24,12 +24,4 @@ class EpicTaskTest {
 
         assertFalse(epic.getSubtaskIdList().contains(77));
     }
-    // SubTask не может быть своим эпиком
-    @Test
-    void shouldNotBeEpicTaskForSelf() {
-        SubTask subtask = new SubTask("СубТаск", "Описание", 3);
-        subtask.setId(3);
-
-        assertNotEquals(subtask.getId(), subtask.getEpicId());
-    }
 }

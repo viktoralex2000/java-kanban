@@ -2,6 +2,7 @@ package test;
 
 import com.yandex.app.model.*;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTaskTest {
@@ -15,6 +16,7 @@ class EpicTaskTest {
 
         assertEquals(epic1, epic2);
     }
+
     // EpicTask не может быть подзадачей сам себе
     @Test
     void shouldNotBeSubTaskForSelf() {

@@ -5,7 +5,8 @@ import com.yandex.app.model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private LinkedHashMap<Integer,Task> historyLinkedMap;
+    private LinkedHashMap<Integer, Task> historyLinkedMap;
+
     public InMemoryHistoryManager() {
         historyLinkedMap = new LinkedHashMap<>(16, 0.75f, true);
     }

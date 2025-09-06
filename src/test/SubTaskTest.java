@@ -2,6 +2,7 @@ package test;
 
 import com.yandex.app.model.SubTask;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SubTaskTest {

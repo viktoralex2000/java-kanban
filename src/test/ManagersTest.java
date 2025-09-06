@@ -2,6 +2,7 @@ package test;
 
 import com.yandex.app.service.*;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
@@ -11,6 +12,7 @@ class ManagersTest {
         InMemoryTaskManager manager = Managers.getDefault();
         assertNotNull(manager);
     }
+
     // getDefHist возвращает инициализированный объект накопитель истории (5)
     @Test
     void shouldReturnInitializedHistoryManager() {

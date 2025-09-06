@@ -15,11 +15,13 @@ public class EpicTask extends Task {
     }
 
     public void addSubTask(int subtaskId) {
-        subtaskIdList.add(subtaskId);
+        if (subtaskId != getId() && !subtaskIdList.contains(subtaskId)) {
+            subtaskIdList.add(subtaskId);
+        }
     }
 
     public void removeSubTask(int subtaskId) {
-        subtaskIdList.remove(subtaskId);
+        subtaskIdList.remove(Integer.valueOf(subtaskId));
     }
 
     public void clearEpic() {

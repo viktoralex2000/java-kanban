@@ -1,4 +1,4 @@
-package test;
+package test.model;
 
 import com.yandex.app.model.Task;
 import org.junit.jupiter.api.Test;

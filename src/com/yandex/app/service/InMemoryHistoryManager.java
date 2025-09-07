@@ -5,26 +5,29 @@ import com.yandex.app.model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private LinkedHashMap<Integer, Task> historyLinkedMap;
+    private LinkedHashMapContainer<Integer, Task> historyContainer;
 
     public InMemoryHistoryManager() {
-        historyLinkedMap = new LinkedHashMap<>(16, 0.75f, true);
+        historyContainer = new LinkedHashMapContainer<>();
     }
 
     @Override
     public ArrayList<Task> getHistory() {
-        ArrayList<Task> historyList = new ArrayList<>(historyLinkedMap.values());
-        Collections.reverse(historyList);
-        return historyList;
+        ArrayList<Task> list = historyContainer.values();
+        Collections.reverse(list);
+        return list;
     }
 
     @Override
     public void add(int id, Task task) {
-        historyLinkedMap.put(id, task);
+        if (historyContainer.containsKey(id)) {
+            historyContainer.remove(id);
+        }
+        historyContainer.put(id, task);
     }
 
     @Override
     public void remove(int id) {
-        historyLinkedMap.remove(id);
+        historyContainer.remove(id);
     }
 }

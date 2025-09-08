@@ -5,29 +5,72 @@ import com.yandex.app.model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private LinkedHashMapContainer<Integer, Task> historyContainer;
+    private Node startNode;
+    private Node endNode;
+    private final Map<Integer, Node> nodeMap = new HashMap<>();
 
-    public InMemoryHistoryManager() {
-        historyContainer = new LinkedHashMapContainer<>();
-    }
+    private static class Node {
+        Task value;
+        Node prevNode;
+        Node nextNode;
 
-    @Override
-    public ArrayList<Task> getHistory() {
-        ArrayList<Task> list = historyContainer.values();
-        Collections.reverse(list);
-        return list;
+        Node(Task value, Node prevNode, Node nextNode) {
+            this.value = value;
+            this.prevNode = prevNode;
+            this.nextNode = nextNode;
+        }
     }
 
     @Override
     public void add(int id, Task task) {
-        if (historyContainer.containsKey(id)) {
-            historyContainer.remove(id);
-        }
-        historyContainer.put(id, task);
+        remove(id);
+        linkLast(task);
+        nodeMap.put(id, endNode);
     }
 
     @Override
     public void remove(int id) {
-        historyContainer.remove(id);
+        Node node = nodeMap.remove(id);
+        if (node != null) {
+            unlink(node);
+        }
+    }
+
+    @Override
+    public ArrayList<Task> getHistory() {
+        ArrayList<Task> historyList = new ArrayList<>();
+        Node current = endNode;
+        while (current != null) {
+            historyList.add(current.value);
+            current = current.prevNode;
+        }
+        return historyList;
+    }
+
+    private void linkLast(Task value) {
+        Node newNode = new Node(value, endNode, null);
+        if (endNode == null) {
+            startNode = newNode;
+        } else {
+            endNode.nextNode = newNode;
+        }
+        endNode = newNode;
+    }
+
+    private void unlink(Node node) {
+        Node prevNode = node.prevNode;
+        Node nextNode = node.nextNode;
+
+        if (prevNode == null) {
+            startNode = nextNode;
+        } else {
+            prevNode.nextNode = nextNode;
+        }
+
+        if (nextNode == null) {
+            endNode = prevNode;
+        } else {
+            nextNode.prevNode = prevNode;
+        }
     }
 }

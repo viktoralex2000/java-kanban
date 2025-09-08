@@ -1,8 +1,10 @@
-package test;
+package test.java.model;
 
 import com.yandex.app.model.Task;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 class TaskTest {
     // Проверка на равенство по айди у задачи (1)
     @Test

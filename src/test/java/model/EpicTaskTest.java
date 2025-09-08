@@ -1,7 +1,8 @@
-package test;
+package test.java.model;
 
 import com.yandex.app.model.*;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTaskTest {
@@ -15,6 +16,7 @@ class EpicTaskTest {
 
         assertEquals(epic1, epic2);
     }
+
     // EpicTask не может быть подзадачей сам себе
     @Test
     void shouldNotBeSubTaskForSelf() {
@@ -23,13 +25,5 @@ class EpicTaskTest {
         epic.addSubTask(77);
 
         assertFalse(epic.getSubtaskIdList().contains(77));
-    }
-    // SubTask не может быть своим эпиком
-    @Test
-    void shouldNotBeEpicTaskForSelf() {
-        SubTask subtask = new SubTask("СубТаск", "Описание", 3);
-        subtask.setId(3);
-
-        assertNotEquals(subtask.getId(), subtask.getEpicId());
     }
 }

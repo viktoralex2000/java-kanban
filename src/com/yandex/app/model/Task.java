@@ -46,7 +46,6 @@ public class Task {
         this.status = status;
     }
 
-    //переопределяем хешкод по id
     @Override
     public int hashCode() {
         return Objects.hash(id);

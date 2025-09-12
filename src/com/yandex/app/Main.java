@@ -3,11 +3,13 @@ package com.yandex.app;
 import com.yandex.app.model.*;
 import com.yandex.app.service.*;
 
+import java.nio.file.Path;
+
 class Main {
     static InMemoryTaskManager inMemoryTaskManager;
 
     public static void main(String[] args) {
-        inMemoryTaskManager = Managers.getDefault();
+        inMemoryTaskManager = Managers.getFileBackedTaskManager(Path.of("src\\data\\memory.csv"));
 
         // 1. Создание задач
         Task task1 = new Task("Задача 1", "Описание 1");

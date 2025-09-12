@@ -6,16 +6,16 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int idCount = 1;
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, EpicTask> epics = new HashMap<>();
-    private HashMap<Integer, SubTask> subtasks = new HashMap<>();
-    private HistoryManager historyManager;
+    protected HashMap<Integer, Task> tasks = new HashMap<>();
+    protected HashMap<Integer, EpicTask> epics = new HashMap<>();
+    protected HashMap<Integer, SubTask> subtasks = new HashMap<>();
+    protected HistoryManager historyManager;
 
     InMemoryTaskManager() {
         this.historyManager = Managers.getDefaultHistory();
     }
 
-    private int newId() {
+    int newId() {
         return idCount++;
     }
 
@@ -23,6 +23,7 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<Task> getHistory() {
         return historyManager.getHistory();
     }
+
     // Методы задач
 
     @Override

@@ -46,6 +46,10 @@ public class Task {
         this.status = status;
     }
 
+    public TaskTypes getType() {
+        return TaskTypes.TASK;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
@@ -61,11 +65,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                '}';
+        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription();
     }
 }

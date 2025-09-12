@@ -34,11 +34,8 @@ class FileBackedTaskManagerTest {
         manager.createEpicTask(epic);
         SubTask sub = new SubTask("Sub1", "SubDescription", epic.getId());
         manager.createSubTask(sub);
-
         manager.save();
-
         List<String> lines = Files.readAllLines(tempFile);
-
         assertEquals("id,type,name,status,description,epic", lines.get(0));
         assertTrue(lines.contains(task.toString()));
         assertTrue(lines.contains(epic.toString()));
@@ -52,17 +49,13 @@ class FileBackedTaskManagerTest {
                 "2,EPIC,Epic1,NEW,EpicDescription,\n" +
                 "3,SUBTASK,Sub1,NEW,SubDescription,2\n";
         Files.writeString(tempFile, csvContent);
-
         manager = new FileBackedTaskManager(tempFile);
-
         Task task = manager.getTaskById(1);
         EpicTask epic = (EpicTask) manager.getEpicTaskById(2);
         SubTask sub = manager.getSubTaskById(3);
-
         assertNotNull(task);
         assertNotNull(epic);
         assertNotNull(sub);
-
         assertEquals("Task1", task.getName());
         assertEquals("Epic1", epic.getName());
         assertEquals("Sub1", sub.getName());
@@ -76,12 +69,9 @@ class FileBackedTaskManagerTest {
                 "2,SUBTASK,Sub1,NEW,SubDescription,1\n" +
                 "3,SUBTASK,Sub2,DONE,AnotherSub,1\n";
         Files.writeString(tempFile, csvContent);
-
         manager = new FileBackedTaskManager(tempFile);
-
         EpicTask epic = (EpicTask) manager.getEpicTaskById(1);
         List<SubTask> subtasks = manager.getSubtasksOfEpic(epic.getId());
-
         assertEquals(2, subtasks.size());
         assertTrue(subtasks.stream().anyMatch(s -> s.getName().equals("Sub1")));
         assertTrue(subtasks.stream().anyMatch(s -> s.getName().equals("Sub2")));
@@ -93,10 +83,8 @@ class FileBackedTaskManagerTest {
         Task task1 = new Task("Task1", "Description1");
         manager.createTask(task1);
         manager.save();
-
         Task task2 = new Task("Task2", "Description2");
         manager.createTask(task2);
-
         List<String> lines = Files.readAllLines(tempFile);
         assertTrue(lines.contains(task1.toString()));
         assertTrue(lines.contains(task2.toString()));

@@ -5,6 +5,7 @@ import com.yandex.app.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +15,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     void init() {
-        manager = Managers.getDefault();
+        manager = Managers.getDefault(Path.of("src\\data\\memory.csv"));
     }
 
     // SubTask не может быть своим эпиком

@@ -6,17 +6,26 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private int idCount = 1;
-    protected HashMap<Integer, Task> tasks = new HashMap<>();
-    protected HashMap<Integer, EpicTask> epics = new HashMap<>();
-    protected HashMap<Integer, SubTask> subtasks = new HashMap<>();
-    protected HistoryManager historyManager;
+    private HashMap<Integer, Task> tasks = new HashMap<>();
+    private HashMap<Integer, EpicTask> epics = new HashMap<>();
+    private HashMap<Integer, SubTask> subtasks = new HashMap<>();
+    private HistoryManager historyManager;
 
     InMemoryTaskManager() {
         this.historyManager = Managers.getDefaultHistory();
     }
 
-    int newId() {
-        return idCount++;
+    private int newId() {
+        idCount++;
+        while (true) {
+            if (tasks.containsKey(idCount)
+                    || epics.containsKey(idCount)
+                    || subtasks.containsKey(idCount)) {
+                idCount++;
+            } else {
+                return idCount;
+            }
+        }
     }
 
     @Override
@@ -217,6 +226,16 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(TaskStatus.DONE);
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
+        }
+    }
+
+    protected void putInMap(Task task) {
+        if (task.getType() == TaskTypes.TASK) {
+            tasks.put(task.getId(), task);
+        } else if (task.getType() == TaskTypes.EPIC) {
+            epics.put(task.getId(), (EpicTask) task);
+        } else {
+            subtasks.put(task.getId(), (SubTask) task);
         }
     }
 

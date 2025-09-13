@@ -6,65 +6,67 @@ import com.yandex.app.service.*;
 import java.nio.file.Path;
 
 class Main {
-    static InMemoryTaskManager inMemoryTaskManager;
+    static TaskManager taskManager;
 
     public static void main(String[] args) {
-        inMemoryTaskManager = Managers.getFileBackedTaskManager(Path.of("src\\data\\memory.csv"));
+        taskManager = Managers.getDefault(Path.of("src\\data\\memory.csv"));
+
+
 
         // 1. Создание задач
         Task task1 = new Task("Задача 1", "Описание 1");
         Task task2 = new Task("Задача 2", "Описание 2");
-        inMemoryTaskManager.createTask(task1);
-        inMemoryTaskManager.createTask(task2);
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
 
         EpicTask epic1 = new EpicTask("Эпик 1", "Описание эпика 1");
-        inMemoryTaskManager.createEpicTask(epic1);
+        taskManager.createEpicTask(epic1);
         SubTask sub1 = new SubTask("Подзадача 1", "Подробности 1", epic1.getId());
         SubTask sub2 = new SubTask("Подзадача 2", "Подробности 2", epic1.getId());
-        inMemoryTaskManager.createSubTask(sub1);
-        inMemoryTaskManager.createSubTask(sub2);
+        taskManager.createSubTask(sub1);
+        taskManager.createSubTask(sub2);
 
         EpicTask epic2 = new EpicTask("Эпик 2", "Описание эпика 2");
-        inMemoryTaskManager.createEpicTask(epic2);
+        taskManager.createEpicTask(epic2);
         SubTask sub3 = new SubTask("Подзадача 3", "Подробности 3", epic2.getId());
-        inMemoryTaskManager.createSubTask(sub3);
+        taskManager.createSubTask(sub3);
 
         // 2. Просмотры и история
         System.out.println("\n== Просмотр задач и история после каждого вызова ==\n");
 
-        inMemoryTaskManager.getTaskById(task1.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.getTaskById(task1.getId());
+        printHistory(taskManager);
         System.out.println();
-        inMemoryTaskManager.getEpicTaskById(epic1.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.getEpicTaskById(epic1.getId());
+        printHistory(taskManager);
         System.out.println();
-        inMemoryTaskManager.getSubTaskById(sub1.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.getSubTaskById(sub1.getId());
+        printHistory(taskManager);
         System.out.println();
-        inMemoryTaskManager.getTaskById(task2.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.getTaskById(task2.getId());
+        printHistory(taskManager);
         System.out.println();
-        inMemoryTaskManager.getSubTaskById(sub2.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.getSubTaskById(sub2.getId());
+        printHistory(taskManager);
         System.out.println();
-        inMemoryTaskManager.getEpicTaskById(epic2.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.getEpicTaskById(epic2.getId());
+        printHistory(taskManager);
         System.out.println();
-        inMemoryTaskManager.getSubTaskById(sub3.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.getSubTaskById(sub3.getId());
+        printHistory(taskManager);
         System.out.println("\n==Перенос повторного запроса Таска в конец истории==\n");
-        inMemoryTaskManager.getTaskById(task1.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.getTaskById(task1.getId());
+        printHistory(taskManager);
         System.out.println("\n==Удаление таска приводит к удалению его из истории==\n");
-        inMemoryTaskManager.deleteTaskById(task1.getId());
-        printHistory(inMemoryTaskManager);
+        taskManager.deleteTaskById(task1.getId());
+        printHistory(taskManager);
         System.out.println("\n==Удаление всех эпиков удаляет субтаски и эпики еще и из истории==\n");
-        inMemoryTaskManager.deleteAllEpicTasks();
-        printHistory(inMemoryTaskManager);
+        taskManager.deleteAllEpicTasks();
+        printHistory(taskManager);
     }
 
-    private static void printHistory(InMemoryTaskManager manager) {
-        for (Task task : inMemoryTaskManager.getHistory()) {
+    private static void printHistory(TaskManager manager) {
+        for (Task task : taskManager.getHistory()) {
             System.out.println(task);
         }
     }

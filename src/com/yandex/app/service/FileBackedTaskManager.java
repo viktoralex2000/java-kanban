@@ -8,30 +8,28 @@ import java.nio.file.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     Path memoryPath;
+    final String title = "id,type,name,status,description,epic";
 
     public FileBackedTaskManager(Path memoryPath) {
         super();
         this.memoryPath = memoryPath;
+        loadFromFile();
+    }
+
+    private void loadFromFile() {
         try (var reader = Files.newBufferedReader(memoryPath, StandardCharsets.UTF_8)) {
             String line;
-            if ((line = reader.readLine()) != null)
+            if ((line = reader.readLine()) != null) {
                 while ((line = reader.readLine()) != null) {
                     Task task = fromString(line);
-                    if (task.getType() == TaskTypes.SUBTASK) {
-                        subtasks.put(task.getId(), (SubTask) task);
-
-                    } else if (task.getType() == TaskTypes.EPIC) {
-                        epics.put(task.getId(), (EpicTask) task);
-                    } else {
-                        tasks.put(task.getId(), task);
-                    }
+                    super.putInMap(task);
                 }
-        } catch (
-                IOException e) {
+            }
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         for (SubTask subTask : getAllSubTasks()) {
-            EpicTask epic = epics.get(subTask.getEpicId());
+            EpicTask epic = getAllEpicTasks().get(subTask.getEpicId());
             if (epic != null) {
                 epic.addSubTask(subTask.getId());
                 updateEpicStatus(epic);
@@ -41,7 +39,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public void save() {
         try (BufferedWriter writer = Files.newBufferedWriter(memoryPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            writer.write("id,type,name,status,description,epic");
+            writer.write(title);
             writer.newLine();
             for (Task task : getAllTasks()) {
                 writer.write(task.toString());
@@ -50,13 +48,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (EpicTask epicTask : getAllEpicTasks()) {
                 writer.write(epicTask.toString());
                 writer.newLine();
+
             }
             for (SubTask subTask : getAllSubTasks()) {
                 writer.write(subTask.toString());
                 writer.newLine();
             }
         } catch (IOException e) {
-            System.out.println(e);
+            throw new ManagerSaveException("Ошибка при сохранении данных в файл: " + memoryPath);
         }
     }
 

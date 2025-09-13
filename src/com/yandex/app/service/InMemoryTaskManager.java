@@ -16,16 +16,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private int newId() {
-        idCount++;
-        while (true) {
-            if (tasks.containsKey(idCount)
-                    || epics.containsKey(idCount)
-                    || subtasks.containsKey(idCount)) {
-                idCount++;
-            } else {
-                return idCount;
-            }
+        while (tasks.containsKey(idCount)
+                || epics.containsKey(idCount)
+                || subtasks.containsKey(idCount)) {
+            idCount++;
         }
+        return idCount++;
     }
 
     @Override
@@ -89,7 +85,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task getEpicTaskById(int id) {
+    public EpicTask getEpicTaskById(int id) {
         EpicTask epicTaskById = epics.get(id);
         if (epicTaskById != null) {
             historyManager.add(id, epicTaskById);

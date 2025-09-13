@@ -79,10 +79,9 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    void saveTaskInFile_shouldAppendNewTaskWithoutOverwriting() throws IOException {
+    void saveTaskInFile_shouldWriteAllTasksCorrectly() throws IOException {
         Task task1 = new Task("Task1", "Description1");
         manager.createTask(task1);
-        manager.save();
         Task task2 = new Task("Task2", "Description2");
         manager.createTask(task2);
         List<String> lines = Files.readAllLines(tempFile);
@@ -90,4 +89,5 @@ class FileBackedTaskManagerTest {
         assertTrue(lines.contains(task2.toString()));
         assertEquals(3, lines.size()); // Заголовок + 2 задачи
     }
+
 }

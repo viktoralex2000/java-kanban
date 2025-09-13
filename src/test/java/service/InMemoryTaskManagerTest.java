@@ -15,7 +15,7 @@ class InMemoryTaskManagerTest {
 
     @BeforeEach
     void init() {
-        manager = Managers.getDefault(Path.of("src\\data\\memory.csv"));
+        manager = Managers.getInMemoryTaskManager();
     }
 
     // SubTask не может быть своим эпиком

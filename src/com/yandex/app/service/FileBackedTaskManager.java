@@ -28,13 +28,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
         for (SubTask subTask : getAllSubTasks()) {
-            EpicTask epic = getAllEpicTasks().get(subTask.getEpicId());
+            EpicTask epic = getEpicTaskById(subTask.getEpicId());
             if (epic != null) {
                 epic.addSubTask(subTask.getId());
                 updateEpicStatus(epic);
             }
         }
+
     }
 
     public void save() {

@@ -11,7 +11,7 @@ class ManagersTest {
     // getDef возвращает готовый объект менеджера (5)
     @Test
     void shouldReturnInitializedTaskManager() {
-        InMemoryTaskManager manager = Managers.getDefault(Path.of("src\\data\\memory.csv"));
+        InMemoryTaskManager manager = Managers.getInMemoryTaskManager();
         assertNotNull(manager);
     }
 

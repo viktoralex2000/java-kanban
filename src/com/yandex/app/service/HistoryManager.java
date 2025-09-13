@@ -2,10 +2,12 @@ package com.yandex.app.service;
 
 import com.yandex.app.model.Task;
 
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 public interface HistoryManager {
-    void updateHistory(Task task);
+    void add(int id, Task task);
 
-    ArrayDeque<Task> getHistory();
+    void remove(int id);
+
+    ArrayList<Task> getHistory();
 }

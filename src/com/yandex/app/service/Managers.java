@@ -1,10 +1,17 @@
 package com.yandex.app.service;
 
+import java.nio.file.Path;
+
 public class Managers {
-    public static InMemoryTaskManager getDefault(int maxHistorySize) {
-        return new InMemoryTaskManager(maxHistorySize);//Замечание: теперь история создается в менеджере задач
+    public static InMemoryTaskManager getDefault(Path path) {
+        return new FileBackedTaskManager(path);
     }
-    public static InMemoryHistoryManager getDefaultHistory(int maxHistorySize) {
-        return new InMemoryHistoryManager(maxHistorySize);
+
+    public static InMemoryHistoryManager getDefaultHistory() {
+        return new InMemoryHistoryManager();
+    }
+
+    public static InMemoryTaskManager getInMemoryTaskManager() {
+        return new InMemoryTaskManager();
     }
 }

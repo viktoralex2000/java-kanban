@@ -13,14 +13,12 @@ public class SubTask extends Task {
     }
 
     @Override
-    public String toString() {
-        return "SubTask{" +
-                "name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", id=" + getId() +
-                ", status=" + getStatus() +
-                ", epicId=" + epicId +
-                '}';
+    public TaskTypes getType() {
+        return TaskTypes.SUBTASK;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + "," + getEpicId();
+    }
 }

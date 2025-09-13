@@ -10,31 +10,27 @@ public class EpicTask extends Task {
         subtaskIdList = new ArrayList<>();
     }
 
+    @Override
+    public TaskTypes getType() {
+        return TaskTypes.EPIC;
+    }
+
     public ArrayList<Integer> getSubtaskIdList() {
         return subtaskIdList;
     }
 
     public void addSubTask(int subtaskId) {
-        subtaskIdList.add(subtaskId);
+        if (subtaskId != getId() && !subtaskIdList.contains(subtaskId)) {
+            subtaskIdList.add(subtaskId);
+        }
     }
 
     public void removeSubTask(int subtaskId) {
-        subtaskIdList.remove(subtaskId);
+        subtaskIdList.remove(Integer.valueOf(subtaskId));
     }
 
     public void clearEpic() {
         subtaskIdList.clear();
-    }
-
-    @Override
-    public String toString() {
-        return "EpicTask{" +
-                "name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", id=" + getId() +
-                ", status=" + getStatus() +
-                ", subTaskIdList=" + subtaskIdList +
-                '}';
     }
 
 }

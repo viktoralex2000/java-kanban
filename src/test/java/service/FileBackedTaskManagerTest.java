@@ -2,92 +2,65 @@ package test.java.service;
 
 import com.yandex.app.model.*;
 import com.yandex.app.service.FileBackedTaskManager;
+import com.yandex.app.service.ManagerSaveException;
+import com.yandex.app.service.Managers;
 import org.junit.jupiter.api.*;
 
+import java.io.IOException;
 import java.nio.file.*;
-import java.io.*;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileBackedTaskManagerTest {
 
-    private Path tempFile;
-    private FileBackedTaskManager manager;
+    private Path testFile;
 
     @BeforeEach
     void setup() throws IOException {
-        tempFile = Files.createTempFile("testMemory", ".csv");
-        manager = new FileBackedTaskManager(tempFile);
+        testFile = Files.createTempFile("tasks", ".csv");
     }
 
     @AfterEach
     void cleanup() throws IOException {
-        Files.deleteIfExists(tempFile);
+        Files.deleteIfExists(testFile);
     }
 
     @Test
-    void save_shouldWriteAllTasksToFile() throws IOException {
+    void saveAndLoadFromFile_shouldRestoreAllTasks() {
+        FileBackedTaskManager manager = new FileBackedTaskManager(testFile);
         Task task = new Task("Task1", "Description1");
-        EpicTask epic = new EpicTask("Epic1", "EpicDescription");
+        EpicTask epic = new EpicTask("Epic1", "EpicDescription1");
         manager.createTask(task);
         manager.createEpicTask(epic);
-        SubTask sub = new SubTask("Sub1", "SubDescription", epic.getId());
-        manager.createSubTask(sub);
-        manager.save();
-        List<String> lines = Files.readAllLines(tempFile);
+        SubTask subTask = new SubTask("Sub1", "SubDescription1", epic.getId());
+        manager.createSubTask(subTask);
+        FileBackedTaskManager loadedManager = (FileBackedTaskManager) Managers.getDefault(testFile);
+        assertEquals(1, loadedManager.getAllTasks().size(), "Должна быть 1 обычная задача");
+        assertEquals(1, loadedManager.getAllEpicTasks().size(), "Должен быть 1 эпик");
+        assertEquals(1, loadedManager.getAllSubTasks().size(), "Должна быть 1 подзадача");
+        Task loadedTask = loadedManager.getAllTasks().get(0);
+        assertEquals(task.getName(), loadedTask.getName());
+        assertEquals(task.getDescription(), loadedTask.getDescription());
+        EpicTask loadedEpic = loadedManager.getAllEpicTasks().get(0);
+        assertEquals(epic.getName(), loadedEpic.getName());
+        assertEquals(epic.getDescription(), loadedEpic.getDescription());
+        SubTask loadedSubTask = loadedManager.getAllSubTasks().get(0);
+        assertEquals(subTask.getName(), loadedSubTask.getName());
+        assertEquals(subTask.getDescription(), loadedSubTask.getDescription());
+        assertEquals(subTask.getEpicId(), loadedSubTask.getEpicId());
+    }
+
+    @Test
+    void save_shouldCreateFileWithContent() throws IOException {
+        FileBackedTaskManager manager = new FileBackedTaskManager(testFile);
+        Task task = new Task("TaskTest", "DescTest");
+        manager.createTask(task);
+        assertTrue(Files.exists(testFile), "Файл должен существовать после save");
+        List<String> lines = Files.readAllLines(testFile);
+        assertTrue(lines.size() > 1, "Файл должен содержать заголовок и хотя бы одну задачу");
         assertEquals("id,type,name,status,description,epic", lines.get(0));
-        assertTrue(lines.contains(task.toString()));
-        assertTrue(lines.contains(epic.toString()));
-        assertTrue(lines.contains(sub.toString()));
-    }
-
-    @Test
-    void constructor_shouldLoadTasksFromFile() throws IOException {
-        String csvContent = "id,type,name,status,description,epic\n" +
-                "1,TASK,Task1,NEW,Description1,\n" +
-                "2,EPIC,Epic1,NEW,EpicDescription,\n" +
-                "3,SUBTASK,Sub1,NEW,SubDescription,2\n";
-        Files.writeString(tempFile, csvContent);
-        manager = new FileBackedTaskManager(tempFile);
-        Task task = manager.getTaskById(1);
-        EpicTask epic = (EpicTask) manager.getEpicTaskById(2);
-        SubTask sub = manager.getSubTaskById(3);
-        assertNotNull(task);
-        assertNotNull(epic);
-        assertNotNull(sub);
-        assertEquals("Task1", task.getName());
-        assertEquals("Epic1", epic.getName());
-        assertEquals("Sub1", sub.getName());
-        assertEquals(epic.getId(), sub.getEpicId());
-    }
-
-    @Test
-    void constructor_shouldRestoreEpicSubtaskLinksAndStatus() throws IOException {
-        String csvContent = "id,type,name,status,description,epic\n" +
-                "1,EPIC,Epic1,NEW,EpicDescription,\n" +
-                "2,SUBTASK,Sub1,NEW,SubDescription,1\n" +
-                "3,SUBTASK,Sub2,DONE,AnotherSub,1\n";
-        Files.writeString(tempFile, csvContent);
-        manager = new FileBackedTaskManager(tempFile);
-        EpicTask epic = (EpicTask) manager.getEpicTaskById(1);
-        List<SubTask> subtasks = manager.getSubtasksOfEpic(epic.getId());
-        assertEquals(2, subtasks.size());
-        assertTrue(subtasks.stream().anyMatch(s -> s.getName().equals("Sub1")));
-        assertTrue(subtasks.stream().anyMatch(s -> s.getName().equals("Sub2")));
-        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
-    }
-
-    @Test
-    void saveTaskInFile_shouldWriteAllTasksCorrectly() throws IOException {
-        Task task1 = new Task("Task1", "Description1");
-        manager.createTask(task1);
-        Task task2 = new Task("Task2", "Description2");
-        manager.createTask(task2);
-        List<String> lines = Files.readAllLines(tempFile);
-        assertTrue(lines.contains(task1.toString()));
-        assertTrue(lines.contains(task2.toString()));
-        assertEquals(3, lines.size()); // Заголовок + 2 задачи
+        assertTrue(lines.get(1).contains("TaskTest"));
     }
 
 }

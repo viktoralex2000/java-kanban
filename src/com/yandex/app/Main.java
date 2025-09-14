@@ -11,8 +11,6 @@ class Main {
     public static void main(String[] args) {
         taskManager = Managers.getDefault(Path.of("src\\data\\memory.csv"));
 
-
-
         // 1. Создание задач
         Task task1 = new Task("Задача 1", "Описание 1");
         Task task2 = new Task("Задача 2", "Описание 2");

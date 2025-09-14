@@ -5,43 +5,63 @@ import com.yandex.app.model.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.util.ArrayList;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    Path memoryPath;
-    final String title = "id,type,name,status,description,epic";
+    private final static String TITLE = "id,type,name,status,description,epic";
+    private Path path;
 
-    public FileBackedTaskManager(Path memoryPath) {
+    public FileBackedTaskManager(Path path) {
         super();
-        this.memoryPath = memoryPath;
-        loadFromFile();
+        this.path = path;
     }
 
-    private void loadFromFile() {
-        try (var reader = Files.newBufferedReader(memoryPath, StandardCharsets.UTF_8)) {
+    protected static FileBackedTaskManager loadFromFile(Path path) {
+        FileBackedTaskManager manager = new FileBackedTaskManager(path);
+        ArrayList<SubTask> subTaskList = new ArrayList<>();
+
+        try (var reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            manager.enableRestoreMode();
             String line;
             if ((line = reader.readLine()) != null) {
                 while ((line = reader.readLine()) != null) {
-                    Task task = fromString(line);
-                    super.putInMap(task);
+                    Task task = manager.fromString(line);
+                    if (task.getType() == TaskTypes.TASK) {
+                        manager.restoreTask(task);
+                    } else if (task.getType() == TaskTypes.EPIC) {
+                        manager.restoreEpicTask((EpicTask) task);
+                    } else {
+                        subTaskList.add((SubTask) task);
+                    }
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        for (SubTask subTask : getAllSubTasks()) {
-            EpicTask epic = getEpicTaskById(subTask.getEpicId());
-            if (epic != null) {
-                epic.addSubTask(subTask.getId());
-                updateEpicStatus(epic);
-            }
+        for (SubTask subTask : subTaskList) {
+            manager.restoreSubTask(subTask);
         }
+        manager.disableRestoreMode();
+        manager.recalcId();
+        return manager;
+    }
 
+
+    private void restoreTask(Task task) {
+        super.createTask(task);
+    }
+
+    private void restoreEpicTask(EpicTask epicTask) {
+        super.createEpicTask((EpicTask) epicTask);
+    }
+
+    private void restoreSubTask(SubTask subTask) {
+        super.createSubTask((SubTask) subTask);
     }
 
     public void save() {
-        try (BufferedWriter writer = Files.newBufferedWriter(memoryPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-            writer.write(title);
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            writer.write(TITLE);
             writer.newLine();
             for (Task task : getAllTasks()) {
                 writer.write(task.toString());
@@ -50,14 +70,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (EpicTask epicTask : getAllEpicTasks()) {
                 writer.write(epicTask.toString());
                 writer.newLine();
-
             }
             for (SubTask subTask : getAllSubTasks()) {
                 writer.write(subTask.toString());
                 writer.newLine();
             }
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка при сохранении данных в файл: " + memoryPath);
+            throw new ManagerSaveException("Ошибка при сохранении данных в файл: " + path);
         }
     }
 

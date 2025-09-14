@@ -1,19 +1,26 @@
+
 package test.java.service;
 
 import com.yandex.app.service.*;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ManagersTest {
-    // getDef возвращает готовый объект менеджера (5)
+
     @Test
-    void shouldReturnInitializedTaskManager() {
-        InMemoryTaskManager manager = Managers.getInMemoryTaskManager();
+    void shouldReturnInitializedTaskManager() throws IOException {
+        Path tempFile = Files.createTempFile("tasks", ".csv");
+        tempFile.toFile().deleteOnExit();
+
+        TaskManager manager = Managers.getDefault(tempFile);
         assertNotNull(manager);
+        assertTrue(manager instanceof FileBackedTaskManager);
     }
 
-    // getDefHist возвращает инициализированный объект накопитель истории (5)
     @Test
     void shouldReturnInitializedHistoryManager() {
         InMemoryHistoryManager history = Managers.getDefaultHistory();

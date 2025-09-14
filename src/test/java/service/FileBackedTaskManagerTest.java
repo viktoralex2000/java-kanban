@@ -2,7 +2,6 @@ package test.java.service;
 
 import com.yandex.app.model.*;
 import com.yandex.app.service.FileBackedTaskManager;
-import com.yandex.app.service.ManagerSaveException;
 import com.yandex.app.service.Managers;
 import org.junit.jupiter.api.*;
 

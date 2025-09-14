@@ -8,7 +8,7 @@ import java.nio.file.*;
 import java.util.ArrayList;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private final static String TITLE = "id,type,name,status,description,epic";
+    private static final String TITLE = "id,type,name,status,description,epic";
     private Path path;
 
     public FileBackedTaskManager(Path path) {

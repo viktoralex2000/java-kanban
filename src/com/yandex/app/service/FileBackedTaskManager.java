@@ -46,7 +46,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return manager;
     }
 
-
     private void restoreTask(Task task) {
         super.createTask(task);
     }

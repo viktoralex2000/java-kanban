@@ -5,10 +5,12 @@ import com.yandex.app.model.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private static final String TITLE = "id,type,name,status,description,epic";
+    private static final String TITLE = "id,type,name,status,description,start_time,duration,epic";
     private Path path;
 
     public FileBackedTaskManager(Path path) {
@@ -81,24 +83,33 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private Task fromString(String line) {
         String[] taskParts = line.split(",");
+        int id = Integer.parseInt(taskParts[0]);
+        String name = taskParts[2];
+        TaskStatus status = TaskStatus.valueOf(taskParts[3].trim());
+        String description = taskParts[4];
+        String startTimePart = taskParts[5];
+        String durationPart = taskParts[6];
+
+        LocalDateTime startTime = startTimePart.isEmpty() ? null : LocalDateTime.parse(startTimePart);
+        Duration duration = durationPart.isEmpty() ? null : Duration.ofMinutes(Long.parseLong(durationPart));
+
         return switch (taskParts[1]) {
             case "TASK" -> {
-                Task task = new Task(taskParts[2], taskParts[4]);
-                task.setId(Integer.parseInt(taskParts[0]));
-                task.setStatus(TaskStatus.valueOf(taskParts[3].trim()));
+                Task task = new Task(name, description, startTime, duration);
+                task.setId(id);
+                task.setStatus(status);
                 yield task;
             }
             case "EPIC" -> {
-                EpicTask epicTask = new EpicTask(taskParts[2], taskParts[4]);
-                epicTask.setId(Integer.parseInt(taskParts[0]));
-                epicTask.setStatus(TaskStatus.valueOf(taskParts[3].trim()));
+                EpicTask epicTask = new EpicTask(name, description, startTime, duration);
+                epicTask.setId(id);
+                epicTask.setStatus(status);
                 yield epicTask;
             }
             case "SUBTASK" -> {
-                SubTask subTask = new SubTask(
-                        taskParts[2], taskParts[4], Integer.parseInt(taskParts[5]));
-                subTask.setId(Integer.parseInt(taskParts[0]));
-                subTask.setStatus(TaskStatus.valueOf(taskParts[3].trim()));
+                SubTask subTask = new SubTask(name, description, Integer.parseInt(taskParts[7]), startTime, duration);
+                subTask.setId(id);
+                subTask.setStatus(status);
                 yield subTask;
             }
             default -> throw new IllegalArgumentException("Неизвестный тип задачи: " + taskParts[1]);

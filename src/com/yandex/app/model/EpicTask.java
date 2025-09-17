@@ -1,12 +1,14 @@
 package com.yandex.app.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class EpicTask extends Task {
     private ArrayList<Integer> subtaskIdList;
 
-    public EpicTask(String name, String description) {
-        super(name, description);
+    public EpicTask(String name, String description, LocalDateTime startTime, Duration duration) {
+        super(name, description, startTime, duration);
         subtaskIdList = new ArrayList<>();
     }
 

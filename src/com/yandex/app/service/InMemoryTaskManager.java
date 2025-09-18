@@ -52,7 +52,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    public List<Task> getPrioritizedTasks() {
+    public ArrayList<Task> getPrioritizedTasks() {
         return new ArrayList<>(priorityTaskTree);
     }
 
@@ -75,7 +75,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {
         int id = task.getId();
-        if (!tasks.containsKey(id)) return;
+        if (!tasks.containsKey(id)) {
+            return;
+        }
 
         if (isTimeOverlap(task)) {
             throw new IllegalArgumentException("Обновляемая задача пересекается по времени с существующей");
@@ -132,7 +134,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpicTask(EpicTask newEpic) {
-        if (!epics.containsKey(newEpic.getId())) return;
+        if (!epics.containsKey(newEpic.getId())) {
+            return;
+        }
         EpicTask oldEpic = epics.get(newEpic.getId());
         oldEpic.setName(newEpic.getName());
         oldEpic.setDescription(newEpic.getDescription());
@@ -177,7 +181,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void createSubTask(SubTask subtask) {
         EpicTask epic = epics.get(subtask.getEpicId());
-        if (epic == null) return;
+        if (epic == null) {
+            return;
+        }
 
         if (!isRestoreMode) {
             subtask.setId(newId());
@@ -197,7 +203,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask newSubTask) {
-        if (!subtasks.containsKey(newSubTask.getId())) return;
+        if (!subtasks.containsKey(newSubTask.getId())) {
+            return;
+        }
 
         if (isTimeOverlap(newSubTask)) {
             throw new IllegalArgumentException("Обновляемая подзадача пересекается по времени с существующей");
@@ -229,7 +237,9 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<SubTask> getSubtasksOfEpic(int epicId) {
         EpicTask epic = epics.get(epicId);
         ArrayList<SubTask> result = new ArrayList<>();
-        if (epic == null) return result;
+        if (epic == null) {
+            return result;
+        }
         for (int subId : epic.getSubtaskIdList()) {
             SubTask subTask = subtasks.get(subId);
             if (subTask != null) result.add(subTask);
@@ -334,7 +344,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     private boolean isTimeOverlap(Task newTask) {
         for (Task task : priorityTaskTree) {
-            if (task.getStartTime() == null || newTask.getStartTime() == null) continue;
+            if (task.getStartTime() == null || newTask.getStartTime() == null) {
+                continue;
+            }
             LocalDateTime t1Start = task.getStartTime();
             LocalDateTime t1End = task.getEndTime();
             LocalDateTime t2Start = newTask.getStartTime();

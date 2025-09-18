@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public interface TaskManager {
 
+    ArrayList<Task> getPrioritizedTasks();
+
     ArrayList<Task> getHistory();
 
     ArrayList<Task> getAllTasks();

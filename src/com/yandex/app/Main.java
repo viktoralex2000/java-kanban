@@ -3,8 +3,6 @@ package com.yandex.app;
 import com.yandex.app.model.*;
 import com.yandex.app.service.*;
 
-import java.nio.file.Path;
-
 class Main {
     static TaskManager taskManager;
 

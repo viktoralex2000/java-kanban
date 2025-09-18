@@ -2,12 +2,13 @@ package com.yandex.app.service;
 
 import com.yandex.app.model.*;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 public interface TaskManager {
 
-    ArrayDeque<Task> getHistory();
+    ArrayList<Task> getPrioritizedTasks();
+
+    ArrayList<Task> getHistory();
 
     ArrayList<Task> getAllTasks();
 

@@ -1,5 +1,6 @@
 package com.yandex.app.model;
 
+import java.time.*;
 import java.util.Objects;
 
 public class Task {
@@ -7,11 +8,15 @@ public class Task {
     private String description;
     private int id;
     private TaskStatus status;
+    private LocalDateTime startTime;
+    private Duration duration;
 
-    public Task(String name, String description) {
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = description;
         this.status = TaskStatus.NEW;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     public String getName() {
@@ -46,7 +51,33 @@ public class Task {
         this.status = status;
     }
 
-    //переопределяем хешкод по id
+    public TaskTypes getType() {
+        return TaskTypes.TASK;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null && duration != null) {
+            return startTime.plus(duration);
+        }
+        return null;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
@@ -62,11 +93,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                '}';
+        return getId() + "," + getType() + "," + getName() + "," + getStatus() + "," + getDescription()
+                + "," + (getStartTime() != null ? getStartTime() : "") + "," +
+                (getDuration() != null ? getDuration().toMinutes() : "");
     }
 }

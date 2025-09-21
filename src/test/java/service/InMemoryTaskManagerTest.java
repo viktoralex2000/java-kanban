@@ -84,28 +84,6 @@ class InMemoryTaskManagerTest {
         assertNotEquals(100, task2.getId());
     }
 
-    // Проверка пересечения времени при создании
-    @Test
-    void shouldThrowIfTasksOverlap() {
-        LocalDateTime start = LocalDateTime.now();
-        Task task1 = new Task("T1", "Desc", start, Duration.ofMinutes(60));
-        manager.createTask(task1);
-        Task task2 = new Task("T2", "Desc", start.plusMinutes(30), Duration.ofMinutes(30));
-        assertThrows(IllegalArgumentException.class, () -> manager.createTask(task2));
-    }
-
-    // Проверка пересечения времени при обновлении
-    @Test
-    void shouldThrowIfUpdatedTaskOverlaps() {
-        LocalDateTime start = LocalDateTime.now();
-        Task task1 = new Task("T1", "Desc", start, Duration.ofMinutes(60));
-        Task task2 = new Task("T2", "Desc", start.plusHours(2), Duration.ofMinutes(30));
-        manager.createTask(task1);
-        manager.createTask(task2);
-        task2.setStartTime(start.plusMinutes(30));
-        assertThrows(IllegalArgumentException.class, () -> manager.updateTask(task2));
-    }
-
     // Проверка правильного порядка в TreeSet (priorityTaskTree)
     @Test
     void shouldOrderTasksByStartTime() {

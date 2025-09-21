@@ -60,34 +60,36 @@ public class InMemoryTaskManager implements TaskManager {
     // Методы задач
 
     @Override
-    public void createTask(Task task) {
+    public boolean createTask(Task task) {
         if (!isRestoreMode) {
             task.setId(newId());
         }
 
         if (isTimeOverlap(task)) {
-            throw new IllegalArgumentException("Новая задача пересекается по времени с существующей");
+            return false;
         }
 
         tasks.put(task.getId(), task);
         priorityTaskTree.add(task);
+        return true;
     }
 
     @Override
-    public void updateTask(Task task) {
+    public boolean updateTask(Task task) {
         int id = task.getId();
         if (!tasks.containsKey(id)) {
-            return;
+            return false;
         }
 
         if (isTimeOverlap(task)) {
-            throw new IllegalArgumentException("Обновляемая задача пересекается по времени с существующей");
+            return false;
         }
 
         Task oldTask = tasks.get(id);
         priorityTaskTree.remove(oldTask);
         tasks.put(id, task);
         priorityTaskTree.add(task);
+        return true;
     }
 
     @Override
@@ -125,22 +127,24 @@ public class InMemoryTaskManager implements TaskManager {
     //Методы эпиков
 
     @Override
-    public void createEpicTask(EpicTask epic) {
+    public boolean createEpicTask(EpicTask epic) {
         if (!isRestoreMode) {
             epic.setId(newId());
         }
         epics.put(epic.getId(), epic);
         updateEpicStatus(epic);
+        return true;
     }
 
     @Override
-    public void updateEpicTask(EpicTask newEpic) {
+    public boolean updateEpicTask(EpicTask newEpic) {
         if (!epics.containsKey(newEpic.getId())) {
-            return;
+            return false;
         }
         EpicTask oldEpic = epics.get(newEpic.getId());
         oldEpic.setName(newEpic.getName());
         oldEpic.setDescription(newEpic.getDescription());
+        return true;
     }
 
     @Override
@@ -180,10 +184,10 @@ public class InMemoryTaskManager implements TaskManager {
     //Методы подзадач
 
     @Override
-    public void createSubTask(SubTask subtask) {
+    public boolean createSubTask(SubTask subtask) {
         EpicTask epic = epics.get(subtask.getEpicId());
         if (epic == null) {
-            return;
+            return false;
         }
 
         if (!isRestoreMode) {
@@ -191,7 +195,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         if (isTimeOverlap(subtask)) {
-            throw new IllegalArgumentException("Новая подзадача пересекается по времени с существующей");
+            return false;
         }
 
         subtasks.put(subtask.getId(), subtask);
@@ -200,16 +204,17 @@ public class InMemoryTaskManager implements TaskManager {
         epic.addSubTask(subtask.getId());
         updateEpicStatus(epic);
         updateEpicTimeAndDuration(epic);
+        return true;
     }
 
     @Override
-    public void updateSubTask(SubTask newSubTask) {
+    public boolean updateSubTask(SubTask newSubTask) {
         if (!subtasks.containsKey(newSubTask.getId())) {
-            return;
+            return false;
         }
 
         if (isTimeOverlap(newSubTask)) {
-            throw new IllegalArgumentException("Обновляемая подзадача пересекается по времени с существующей");
+            return false;
         }
 
         SubTask oldSubTask = subtasks.get(newSubTask.getId());
@@ -222,6 +227,7 @@ public class InMemoryTaskManager implements TaskManager {
             updateEpicStatus(epic);
             updateEpicTimeAndDuration(epic);
         }
+        return true;
     }
 
 

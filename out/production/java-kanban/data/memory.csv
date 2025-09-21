@@ -1,0 +1,5 @@
+id,type,name,status,description,start_time,duration,epic
+1,TASK,first,NEW,ooo,2025-09-21T23:10:11.399223700,30
+2,TASK,seccond,NEW,aaa,2025-09-22T01:10:11.399223700,30
+3,EPIC,first,NEW,ooo,2025-09-22T07:12:25.946104600,10
+4,SUBTASK,subtask,NEW,описание,2025-09-22T07:12:25.946104600,10,3

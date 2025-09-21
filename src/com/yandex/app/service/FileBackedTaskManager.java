@@ -116,15 +116,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         };
     }
 
-    public void createTask(Task task) {
-        super.createTask(task);
+    public boolean createTask(Task task) {
+        boolean flag = super.createTask(task);
         save();
+        return flag;
     }
 
     @Override
-    public void updateTask(Task task) {
-        super.updateTask(task);
+    public boolean updateTask(Task task) {
+        boolean flag = super.updateTask(task);
         save();
+        return flag;
     }
 
     @Override
@@ -140,15 +142,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createEpicTask(EpicTask epic) {
-        super.createEpicTask(epic);
+    public boolean createEpicTask(EpicTask epic) {
+        boolean flag = super.createEpicTask(epic);
         save();
+        return flag;
     }
 
     @Override
-    public void updateEpicTask(EpicTask newEpic) {
-        super.updateEpicTask(newEpic);
+    public boolean updateEpicTask(EpicTask newEpic) {
+        boolean flag = super.updateEpicTask(newEpic);
         save();
+        return flag;
     }
 
     @Override
@@ -164,15 +168,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createSubTask(SubTask subtask) {
-        super.createSubTask(subtask);
+    public boolean createSubTask(SubTask subtask) {
+        boolean flag = super.createSubTask(subtask);
         save();
+        return flag;
     }
 
     @Override
-    public void updateSubTask(SubTask newSubTask) {
-        super.updateSubTask(newSubTask);
+    public boolean updateSubTask(SubTask newSubTask) {
+        boolean flag = super.updateSubTask(newSubTask);
         save();
+        return flag;
     }
 
     @Override

@@ -47,7 +47,7 @@ public class HttpTaskServer {
             }
         }
     }
-    
+
     public void startServer() {
         try {
             if (httpServer == null) {

@@ -2,12 +2,13 @@ package com.yandex.app.service;
 
 import com.yandex.app.model.*;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 public interface TaskManager {
 
-    ArrayDeque<Task> getHistory();
+    ArrayList<Task> getPrioritizedTasks();
+
+    ArrayList<Task> getHistory();
 
     ArrayList<Task> getAllTasks();
 
@@ -15,9 +16,9 @@ public interface TaskManager {
 
     Task getTaskById(int id);
 
-    void createTask(Task task);
+    boolean createTask(Task task);
 
-    void updateTask(Task task);
+    boolean updateTask(Task task);
 
     void deleteTaskById(int id);
 
@@ -27,9 +28,9 @@ public interface TaskManager {
 
     Task getEpicTaskById(int id);
 
-    void createEpicTask(EpicTask epic);
+    boolean createEpicTask(EpicTask epic);
 
-    void updateEpicTask(EpicTask newEpic);
+    boolean updateEpicTask(EpicTask newEpic);
 
     void deleteEpicTaskById(int id);
 
@@ -39,9 +40,9 @@ public interface TaskManager {
 
     SubTask getSubTaskById(int id);
 
-    void createSubTask(SubTask subtask);
+    boolean createSubTask(SubTask subtask);
 
-    void updateSubTask(SubTask newSubTask);
+    boolean updateSubTask(SubTask newSubTask);
 
     void deleteSubTaskById(int id);
 

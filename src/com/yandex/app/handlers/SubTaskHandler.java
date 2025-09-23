@@ -1,4 +1,4 @@
-package com.yandex.app.server;
+package com.yandex.app.handlers;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpHandler;
@@ -8,11 +8,9 @@ import com.yandex.app.service.TaskManager;
 
 import java.util.ArrayList;
 
-public class SubTaskHandler extends BaseHttpHandler implements HttpHandler {
+public class SubTaskHandler extends BaseHttpHandler<SubTask> implements HttpHandler {
     public SubTaskHandler(TaskManager manager, Gson gson) {
-        super(manager, gson);
-        type = SubTask.class;
-        endPoint = "subtasks";
+        super(manager, gson, SubTask.class, "subtasks");
     }
 
     @Override

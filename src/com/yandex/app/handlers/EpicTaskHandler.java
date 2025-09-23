@@ -1,4 +1,4 @@
-package com.yandex.app.server;
+package com.yandex.app.handlers;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
@@ -10,11 +10,9 @@ import com.yandex.app.service.TaskManager;
 
 import java.util.ArrayList;
 
-public class EpicTaskHandler extends BaseHttpHandler implements HttpHandler {
+public class EpicTaskHandler extends BaseHttpHandler<EpicTask> implements HttpHandler {
     public EpicTaskHandler(TaskManager manager, Gson gson) {
-        super(manager, gson);
-        type = EpicTask.class;
-        endPoint = "epics";
+        super(manager, gson, EpicTask.class, "epics");
     }
 
     @Override
@@ -29,7 +27,7 @@ public class EpicTaskHandler extends BaseHttpHandler implements HttpHandler {
                     case "GET" -> getAll();
                     case "POST" -> create();
                     case "DELETE" -> deleteAll();
-                    default -> sendResponse(404, null); // неверный метод считаем как "не найдено"
+                    default -> sendResponse(404, null);
                 }
             } else if (path.matches("^/" + endPoint + "/\\d+$")) {
                 int id = Integer.parseInt(path.substring(path.lastIndexOf("/") + 1));
@@ -47,7 +45,7 @@ public class EpicTaskHandler extends BaseHttpHandler implements HttpHandler {
                     sendResponse(500, null);
                 }
             } else {
-                sendResponse(404, null); // неверный путь
+                sendResponse(404, null);
             }
         } catch (Exception e) {
             System.out.println(e);

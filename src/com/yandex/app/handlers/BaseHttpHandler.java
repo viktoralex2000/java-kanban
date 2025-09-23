@@ -1,4 +1,4 @@
-package com.yandex.app.server;
+package com.yandex.app.handlers;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
@@ -13,14 +13,15 @@ public abstract class BaseHttpHandler<T extends Task> implements HttpHandler {
     protected TaskManager manager;
     protected Gson gson;
     protected HttpExchange httpExchange;
-    protected Class<Task> type;
+    private Class<T> type;
     protected String endPoint;
 
-    public BaseHttpHandler(TaskManager manager, Gson gson) {
+    public BaseHttpHandler(TaskManager manager, Gson gson, Class<T> type, String endPoint) {
         this.manager = manager;
         this.gson = gson;
+        this.type = type;
+        this.endPoint = endPoint;
     }
-
 
     protected abstract boolean createTask(Task task);
 
@@ -104,7 +105,7 @@ public abstract class BaseHttpHandler<T extends Task> implements HttpHandler {
             sendResponse(isCreated ? 201 : 406, null);
         } catch (Exception e) {
             System.out.println(e);
-            sendResponse(500, null); // Bad Request
+            sendResponse(500, null);
         }
     }
 
@@ -116,7 +117,7 @@ public abstract class BaseHttpHandler<T extends Task> implements HttpHandler {
             sendResponse(isUpdated ? 201 : 406, null);
         } catch (Exception e) {
             System.out.println(e);
-            sendResponse(500, null); // Bad Request
+            sendResponse(500, null);
         }
     }
 
